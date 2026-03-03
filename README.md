@@ -1,35 +1,61 @@
-Design Patterns
+## Design Patterns
 
-Factory Pattern (AccountFactory)
-Am folosit Factory Pattern prin clasa AccountFactory pentru a respecta principiul Open/Closed (OCP). În loc să instanțiez direct obiectele de tip cont (BusinessAccount, ClassicAccount, SavingsAccount) în logica principală a aplicației, acest factory se ocupă de crearea lor. Astfel, dacă pe viitor va fi nevoie să adăugăm un nou tip de cont, logica de bază rămâne neatinsă, fiind necesară doar extinderea în clasa factory.
+* **Factory Pattern**
+  * Implemented via the `AccountFactory` class.
+  * Ensures adherence to the Open/Closed Principle (OCP).
+  * Centralizes the creation of account objects (`BusinessAccount`, `ClassicAccount`, `SavingsAccount`) instead of instantiating them directly in the core logic.
+  * Allows new account types to be added in the future by simply extending the factory, without modifying existing code.
 
-Strategy Pattern
-Acest pattern a fost aplicat în modulul de calculare a cashback-ului pentru a evita structurile masive și greu de întreținut de tip switch-case, respectând totodată Single Responsibility Principle (SRP). Interfața CashbackStrategy definește contractul de bază, iar clasele concrete (precum NrOfTransactionsStrategy sau SpendingThreshold) implementează algoritmii specifici. Asta face sistemul foarte ușor de extins: adăugarea unei noi reguli de cashback presupune pur și simplu crearea unei noi clase care implementează strategia, fără să modificăm codul deja existent.
+* **Strategy Pattern**
+  * Applied in the cashback calculation module.
+  * Avoids massive, hard-to-maintain `switch-case` statements, respecting the Single Responsibility Principle (SRP).
+  * Contains:
+    * `CashbackStrategy` interface that defines the base contract.
+    * Concrete classes (`NrOfTransactionsStrategy`, `SpendingThreshold`) that implement specific algorithms.
+  * Facilitates easy extension: adding a new cashback rule only requires creating a new class.
 
-Command Pattern
-Pentru a gestiona varietatea mare de acțiuni pe care le poate face sistemul (adăugare de fonduri, creare de conturi, generare de rapoarte de business), am încapsulat fiecare acțiune într-o clasă separată de comandă. Interfața Command este implementată de aceste clase specifice. Acest lucru decuplează invoker-ul (sistemul care primește cererea) de receiver (logica efectivă care execută acțiunea), făcând codul mult mai modular și simplificând adăugarea de comenzi noi.
+* **Command Pattern**
+  * Encapsulates various system actions into separate command classes.
+  * Implements the `Command` interface for specific actions (e.g., adding funds, creating accounts, generating business reports).
+  * Decouples the invoker (the system processing the input) from the receiver (the actual logic altering the bank's state).
+  * Makes the codebase highly modular and simplifies adding new user commands.
 
-Singleton Pattern
-Clasa Singleton este folosită pentru a menține o singură sursă de adevăr pe toată durata rulării aplicației. Aceasta asigură un acces global la resursele partajate care nu trebuie sub nicio formă duplicate, cum ar fi TransactionManager sau sistemul care gestionează output-ul, prevenind astfel inconsistențele la nivel de date.
+* **Singleton Pattern**
+  * Utilized for the `Singleton` core class.
+  * Maintains a single source of truth throughout the application's lifecycle.
+  * Ensures global access to shared resources that must not be duplicated, such as:
+    * `TransactionManager`
+    * Output generation system
+  * Prevents data inconsistency across different modules.
 
-Structura Proiectului
+---
 
-Proiectul este modularizat și organizat în mai multe pachete, separând clar responsabilitățile sistemului bancar:
+## Project Structure
 
-main: Conține punctul de intrare în aplicație și gestionează inițializarea, inclusiv instanța Singleton pentru accesul global.
+* **Core Packages**
+  * `main`
+    * Contains the entry point of the application.
+    * Handles initialization, including the `Singleton` instance for global data access.
+  * `manager`
+    * Handles the initial system setup.
+    * Manages input and output processing.
+  * `service`
+    * The core package containing the business logic.
+    * Connects the different modules of the application.
+  * `commands`
+    * Includes interfaces and concrete implementations for system actions.
 
-manager: Se ocupă de setup-ul inițial al sistemului și de gestionarea inputului/outputului.
-
-service: Pachetul principal care conține logica de business și conectează diferitele module ale aplicației.
-
-commands: Include interfețele și implementările concrete pentru acțiunile sistemului (adăugare fonduri, creare conturi, rapoarte).
-
-users: Gestionează entitățile utilizatorilor și asocierile lor. Aici se află sub-pachetele "accounts" (pentru logica specifică conturilor de business, clasice și de economii) și "cards" (pentru cardurile fizice și cele de tip One-Time).
-
-cashback: Conține interfața și implementările strategiilor de calcul pentru cashback.
-
-commerciants: Gestionează datele și interacțiunile sistemului cu comercianții.
-
-exchange: Responsabil pentru logica de schimb valutar.
-
-split: Conține logica necesară pentru împărțirea plăților (split payment) între mai multe conturi.
+* **Domain Packages**
+  * `users`
+    * Manages user entities and their associations.
+    * Contains sub-packages:
+      * `accounts`: Logic specific to business, classic, and savings accounts.
+      * `cards`: Logic for handling physical and One-Time Pay cards.
+  * `cashback`
+    * Contains the interface and implementations for cashback calculation strategies.
+  * `commerciants`
+    * Manages data and interactions of the system with merchants.
+  * `exchange`
+    * Responsible for the currency exchange logic.
+  * `split`
+    * Contains the logic required for splitting payments among multiple accounts.
